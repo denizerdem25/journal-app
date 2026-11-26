@@ -1,0 +1,87 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="İptal"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>{{ isEditMode ? 'Günlüğü Düzenle' : 'Yeni Günlük' }}</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button [strong]="true" [disabled]="!canSave()" (click)="save()">
+        Kaydet
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (loaded()) {
+    <!-- Başlık -->
+    <ion-input
+      label="Başlık"
+      labelPlacement="stacked"
+      placeholder="Bugünün başlığı..."
+      maxlength="150"
+      [(ngModel)]="form.title">
+    </ion-input>
+
+    <!-- Ruh hali seçici -->
+    <p class="section-title">Bugün nasıl hissediyorsun?</p>
+    <div class="mood-picker">
+      @for (m of moods; track m.value) {
+        <button
+          type="button"
+          class="mood-chip"
+          [class.selected]="form.mood === m.value"
+          (click)="selectMood(m.value)">
+          <span class="emoji">{{ m.emoji }}</span>
+          <span>{{ m.label }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- İçerik -->
+    <ion-textarea
+      label="Bugün neler oldu?"
+      labelPlacement="stacked"
+      placeholder="Yazmaya başla..."
+      rows="8"
+      [autoGrow]="true"
+      [(ngModel)]="form.content">
+    </ion-textarea>
+
+    <!-- Ekler: sonraki adımlarda çalışır hâle gelecek -->
+    <p class="section-title">Ekle</p>
+    <div class="attachments">
+      <ion-button fill="outline" [disabled]="true">
+        <ion-icon slot="start" name="camera-outline"></ion-icon>
+        Fotoğraf
+      </ion-button>
+      <ion-button fill="outline" [disabled]="true">
+        <ion-icon slot="start" name="mic-outline"></ion-icon>
+        Ses
+      </ion-button>
+      <ion-button fill="outline" [disabled]="true">
+        <ion-icon slot="start" name="videocam-outline"></ion-icon>
+        Video
+      </ion-button>
+      <ion-button fill="outline" [disabled]="true">
+        <ion-icon slot="start" name="musical-notes-outline"></ion-icon>
+        Şarkı
+      </ion-button>
+      <ion-button fill="outline" [disabled]="true">
+        <ion-icon slot="start" name="location-outline"></ion-icon>
+        Konum
+      </ion-button>
+    </div>
+    <p class="hint">Fotoğraf, ses, video, şarkı ve konum sonraki adımlarda eklenecek.</p>
+  } @else {
+    <div class="center">
+      <ion-spinner></ion-spinner>
+    </div>
+  }
+</ion-content>

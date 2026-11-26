@@ -1,0 +1,43 @@
+article {
+  padding-top: 8px;
+}
+
+.mood {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  background: var(--ion-color-light);
+  font-size: 14px;
+}
+
+h1 {
+  margin: 16px 0 4px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.date {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--ion-color-medium);
+}
+
+.content {
+  white-space: pre-line; // kullanıcının bıraktığı satır boşluklarını korur
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.error {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--ion-color-danger-tint);
+  color: white;
+  text-align: center;
+}

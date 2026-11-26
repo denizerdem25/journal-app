@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>My Journal</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Aşağı çekince yenile -->
+  <ion-refresher slot="fixed" (ionRefresh)="loadEntries($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (entries().length === 0 && !errorMessage()) {
+    <div class="empty">
+      <p>Henüz günlük yok.<br />+ butonuna basarak ilkini yaz!</p>
+    </div>
+  }
+
+  <ion-list>
+    @for (entry of entries(); track entry.id) {
+      <ion-item-sliding>
+        <!-- Tıklanınca detay sayfasını açar -->
+        <ion-item [button]="true" [detail]="true" (click)="openEntry(entry.id)">
+          <ion-label>
+            <h2>{{ moodEmoji(entry.mood) }} {{ entry.title }}</h2>
+            <p>{{ entry.content }}</p>
+            <ion-note>{{ entry.createdAt | date: 'dd.MM.yyyy HH:mm' }}</ion-note>
+          </ion-label>
+        </ion-item>
+
+        <!-- Sola kaydırınca çıkan sil butonu -->
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="deleteEntry(entry.id)">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    }
+  </ion-list>
+
+  <!-- Sağ alttaki + butonu: form sayfasını açar -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="newEntry()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

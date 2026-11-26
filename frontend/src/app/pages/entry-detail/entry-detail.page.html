@@ -1,0 +1,48 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <!-- Sol üst: geri butonu -->
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Günlük</ion-title>
+
+    <!-- Sağ üst: düzenle ve sil -->
+    <ion-buttons slot="end">
+      <ion-button (click)="editEntry()">
+        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+      </ion-button>
+      <ion-button color="danger" (click)="confirmDelete()">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (entry(); as e) {
+    <article>
+      <span class="mood">{{ moodEmoji(e.mood) }} {{ moodLabel(e.mood) }}</span>
+
+      <h1>{{ e.title }}</h1>
+
+      <p class="date">
+        {{ e.createdAt | date: 'dd.MM.yyyy HH:mm' }}
+        @if (wasEdited(e)) {
+          <span> · düzenlendi</span>
+        }
+      </p>
+
+      <p class="content">{{ e.content }}</p>
+    </article>
+  } @else if (!errorMessage()) {
+    <!-- Veri gelene kadar dönen yükleniyor simgesi -->
+    <div class="center">
+      <ion-spinner></ion-spinner>
+    </div>
+  }
+</ion-content>
