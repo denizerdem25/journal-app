@@ -26,8 +26,8 @@ public class MediaController {
     @PostMapping(value = "/entries/{entryId}/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public MediaFileRes upload(@PathVariable Long entryId,
-                                    @RequestParam("file") MultipartFile file,
-                                    @RequestParam("type") MediaFileType type) {
+                               @RequestParam("file") MultipartFile file,
+                               @RequestParam("type") MediaFileType type) {
         return mediaService.upload(entryId, file, type);
     }
 
@@ -38,7 +38,7 @@ public class MediaController {
         Resource resource = mediaService.loadFile(media);
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(media.getContentType()))
+                .contentType(toMediaType(media.getContentType()))
                 .cacheControl(CacheControl.maxAge(Duration.ofDays(30)))
                 .body(resource);
     }
@@ -48,5 +48,18 @@ public class MediaController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         mediaService.delete(id);
+    }
+
+    /**
+     * "video/webm;codecs=vp9,opus" gibi parametreli türlerden yalnızca
+     * "video/webm" kısmını alır. Okunamayan türlerde genel ikili dosya döner.
+     */
+    private MediaType toMediaType(String contentType) {
+        try {
+            String baseType = contentType.split(";")[0].trim();
+            return MediaType.parseMediaType(baseType);
+        } catch (Exception e) {
+            return MediaType.APPLICATION_OCTET_STREAM;
+        }
     }
 }

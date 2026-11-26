@@ -19,9 +19,33 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- Gizli video seçici ("Galeriden seç" bunu açar) -->
+  <input
+    #videoInput
+    type="file"
+    accept="video/*"
+    multiple
+    hidden
+    (change)="onVideoSelected($event)" />
+
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
   }
+
+  <!-- Video çekerken görünen canlı kamera paneli -->
+  <div class="camera-panel" [hidden]="!isVideoRecording()">
+    <video #cameraPreview autoplay muted playsinline></video>
+    <div class="camera-bar">
+      <span class="rec-dot"></span>
+      <span class="rec-time">{{ formatDuration(videoSeconds()) }}</span>
+      <span class="rec-label">Video kaydediliyor</span>
+      <ion-button fill="clear" color="light" (click)="cancelVideoRecording()">Vazgeç</ion-button>
+      <ion-button color="danger" (click)="stopVideoRecording()">
+        <ion-icon slot="start" name="stop"></ion-icon>
+        Bitir
+      </ion-button>
+    </div>
+  </div>
 
   @if (loaded()) {
     <!-- Başlık -->
@@ -58,6 +82,41 @@
       [(ngModel)]="form.content">
     </ion-textarea>
 
+    <!-- Konum -->
+    @if (location(); as point) {
+      <p class="section-title">Konum</p>
+      <div class="location-card">
+        <ion-input
+          label="📍 Yer adı"
+          labelPlacement="stacked"
+          placeholder="Örn: Bilkent, Ankara"
+          maxlength="150"
+          [ngModel]="locationName()"
+          (ngModelChange)="onLocationNameInput($event)">
+        </ion-input>
+
+        <app-location-picker
+          [latitude]="point.latitude"
+          [longitude]="point.longitude"
+          (locationChange)="onPinMoved($event)">
+        </app-location-picker>
+
+        <div class="location-meta">
+          <span>
+            @if (locationAccuracy() !== null) {
+              ≈ {{ locationAccuracy() }} m doğruluk
+            } @else {
+              Konum haritadan seçildi
+            }
+          </span>
+          <ion-button fill="clear" color="danger" size="small" (click)="removeLocation()">
+            Konumu kaldır
+          </ion-button>
+        </div>
+        <p class="hint">Pini sürükleyerek veya haritaya dokunarak konumu düzeltebilirsin.</p>
+      </div>
+    }
+
     <!-- Fotoğraflar -->
     @if (existingPhotos().length > 0 || newPhotos().length > 0) {
       <p class="section-title">Fotoğraflar</p>
@@ -83,7 +142,32 @@
       </div>
     }
 
-    <!-- Kayıt sürerken görünen panel -->
+    <!-- Videolar -->
+    @if (existingVideos().length > 0 || newVideos().length > 0) {
+      <p class="section-title">Videolar</p>
+      <div class="video-list">
+        @for (m of existingVideos(); track m.id) {
+          <div class="video-item">
+            <video controls playsinline preload="metadata" [src]="mediaUrl(m.id)"></video>
+            <button type="button" class="remove" (click)="removeExistingMedia(m)">
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+        }
+
+        @for (v of newVideos(); track v.previewUrl; let i = $index) {
+          <div class="video-item">
+            <video controls playsinline preload="metadata" [src]="v.previewUrl"></video>
+            <span class="badge">Yeni</span>
+            <button type="button" class="remove" (click)="removeNewVideo(i)">
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Ses kaydı sürerken görünen panel -->
     @if (isRecording()) {
       <div class="recorder">
         <span class="rec-dot"></span>
@@ -125,15 +209,15 @@
     <!-- Ekler -->
     <p class="section-title">Ekle</p>
     <div class="attachments">
-      <ion-button fill="outline" [disabled]="isRecording()" (click)="addPhoto()">
+      <ion-button fill="outline" [disabled]="isBusy()" (click)="addPhoto()">
         <ion-icon slot="start" name="camera-outline"></ion-icon>
         Fotoğraf
       </ion-button>
-      <ion-button fill="outline" [disabled]="isRecording()" (click)="startRecording()">
+      <ion-button fill="outline" [disabled]="isBusy()" (click)="startRecording()">
         <ion-icon slot="start" name="mic-outline"></ion-icon>
         Ses
       </ion-button>
-      <ion-button fill="outline" [disabled]="true">
+      <ion-button fill="outline" [disabled]="isBusy()" (click)="addVideo()">
         <ion-icon slot="start" name="videocam-outline"></ion-icon>
         Video
       </ion-button>
@@ -141,12 +225,20 @@
         <ion-icon slot="start" name="musical-notes-outline"></ion-icon>
         Şarkı
       </ion-button>
-      <ion-button fill="outline" [disabled]="true">
-        <ion-icon slot="start" name="location-outline"></ion-icon>
-        Konum
+      <ion-button
+        fill="outline"
+        [disabled]="isBusy() || locating() || location() !== null"
+        (click)="addLocation()">
+        @if (locating()) {
+          <ion-spinner slot="start" name="crescent"></ion-spinner>
+          Aranıyor...
+        } @else {
+          <ion-icon slot="start" name="location-outline"></ion-icon>
+          Konum
+        }
       </ion-button>
     </div>
-    <p class="hint">Video, şarkı ve konum sonraki adımlarda eklenecek.</p>
+    <p class="hint">Şarkı bir sonraki adımlarda eklenecek.</p>
   } @else {
     <div class="center">
       <ion-spinner></ion-spinner>

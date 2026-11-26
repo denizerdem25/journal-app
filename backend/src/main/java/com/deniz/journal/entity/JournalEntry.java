@@ -28,6 +28,13 @@ public class JournalEntry {
 
     private String mood; // örn: "happy", "sad", "calm"
 
+    // Konum (opsiyonel): ikisi birlikte dolu ya da birlikte boş olur
+    private Double latitude;   // enlem:  -90 ile 90 arası
+    private Double longitude;  // boylam: -180 ile 180 arası
+
+    @Column(length = 150)
+    private String locationName; // örn: "Bilkent, Ankara"
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

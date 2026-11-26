@@ -33,9 +33,23 @@
         @if (wasEdited(e)) {
           <span> · düzenlendi</span>
         }
+        @if (e.locationName) {
+          <span> · 📍 {{ e.locationName }}</span>
+        }
       </p>
 
       <p class="content">{{ e.content }}</p>
+
+      <!-- Konum -->
+      @if (location(); as point) {
+        <h2 class="section-title">📍 Konum</h2>
+        <app-location-picker
+          [latitude]="point.latitude"
+          [longitude]="point.longitude"
+          [draggable]="false"
+          [pinEmoji]="moodEmoji(e.mood)">
+        </app-location-picker>
+      }
 
       <!-- Ses kayıtları -->
       @if (audios().length > 0) {
@@ -43,6 +57,16 @@
         <div class="audio-list">
           @for (m of audios(); track m.id) {
             <audio controls preload="metadata" [src]="mediaUrl(m.id)"></audio>
+          }
+        </div>
+      }
+
+      <!-- Videolar -->
+      @if (videos().length > 0) {
+        <h2 class="section-title">🎬 Videolar</h2>
+        <div class="video-list">
+          @for (m of videos(); track m.id) {
+            <video controls playsinline preload="metadata" [src]="mediaUrl(m.id)"></video>
           }
         </div>
       }

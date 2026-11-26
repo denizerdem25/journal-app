@@ -12,6 +12,9 @@ export interface JournalEntry {
   title: string;
   content: string;
   mood: string;
+  latitude: number | null;
+  longitude: number | null;
+  locationName: string | null;
   createdAt: string;
   updatedAt: string;
   media: MediaFile[];
@@ -21,4 +24,7 @@ export interface JournalEntryRequest {
   title: string;
   content: string;
   mood: string;
+  latitude: number | null;
+  longitude: number | null;
+  locationName: string | null;
 }

@@ -8,7 +8,7 @@ import {
 import { addIcons } from 'ionicons';
 import { add, trash } from 'ionicons/icons';
 import { JournalService } from '../services/journal.service';
-import { JournalEntry } from '../models/journal-entry.model';
+import { JournalEntry, MediaFileType } from '../models/journal-entry.model';
 import { moodEmoji } from '../models/moods';
 
 @Component({
@@ -58,15 +58,17 @@ export class HomePage {
     return entry.media.find((m) => m.type === 'PHOTO')?.id ?? null;
   }
 
-  /** "📷 2 · 🎤 1" gibi kısa medya özeti; medya yoksa boş metin */
+  /** "📷 2 · 🎤 1 · 🎬 1" gibi kısa medya özeti; medya yoksa boş metin */
   mediaSummary(entry: JournalEntry): string {
-    const photoCount = entry.media.filter((m) => m.type === 'PHOTO').length;
-    const audioCount = entry.media.filter((m) => m.type === 'AUDIO').length;
+    const icons: Record<MediaFileType, string> = { PHOTO: '📷', AUDIO: '🎤', VIDEO: '🎬' };
 
-    const parts: string[] = [];
-    if (photoCount > 0) parts.push(`📷 ${photoCount}`);
-    if (audioCount > 0) parts.push(`🎤 ${audioCount}`);
-    return parts.join(' · ');
+    return (Object.keys(icons) as MediaFileType[])
+      .map((type) => {
+        const count = entry.media.filter((m) => m.type === type).length;
+        return count > 0 ? `${icons[type]} ${count}` : '';
+      })
+      .filter((part) => part !== '')
+      .join(' · ');
   }
 
   mediaUrl(id: number): string {

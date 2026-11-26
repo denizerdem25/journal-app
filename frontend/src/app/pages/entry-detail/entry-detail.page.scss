@@ -49,6 +49,21 @@ h1 {
   }
 }
 
+// Video listesi
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  video {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    border-radius: 12px;
+    background: black;
+  }
+}
+
 // Fotoğraf ızgarası
 .photo-grid {
   display: grid;

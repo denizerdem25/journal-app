@@ -10,13 +10,16 @@ import { createOutline, trashOutline } from 'ionicons/icons';
 import { JournalService } from '../../services/journal.service';
 import { JournalEntry } from '../../models/journal-entry.model';
 import { moodEmoji, moodLabel } from '../../models/moods';
+import {
+  GeoPoint, LocationPickerComponent,
+} from '../../components/location-picker/location-picker.component';
 
 @Component({
   selector: 'app-entry-detail',
   templateUrl: 'entry-detail.page.html',
   styleUrls: ['entry-detail.page.scss'],
   imports: [
-    DatePipe,
+    DatePipe, LocationPickerComponent,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton,
     IonButton, IonIcon, IonSpinner,
   ],
@@ -35,6 +38,14 @@ export class EntryDetailPage {
   // entry değişince otomatik yeniden hesaplanır
   photos = computed(() => this.entry()?.media.filter((m) => m.type === 'PHOTO') ?? []);
   audios = computed(() => this.entry()?.media.filter((m) => m.type === 'AUDIO') ?? []);
+  videos = computed(() => this.entry()?.media.filter((m) => m.type === 'VIDEO') ?? []);
+
+  /** Günlüğün konumu; konum yoksa null */
+  location = computed<GeoPoint | null>(() => {
+    const e = this.entry();
+    if (!e || e.latitude === null || e.longitude === null) return null;
+    return { latitude: e.latitude, longitude: e.longitude };
+  });
 
   moodEmoji = moodEmoji;
   moodLabel = moodLabel;
@@ -65,7 +76,7 @@ export class EntryDetailPage {
   async confirmDelete(): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: 'Günlüğü sil',
-      message: 'Bu günlük, fotoğrafları ve ses kayıtları kalıcı olarak silinecek. Emin misin?',
+      message: 'Bu günlük ve bütün medyası (fotoğraf, ses, video) kalıcı olarak silinecek. Emin misin?',
       buttons: [
         { text: 'Vazgeç', role: 'cancel' },
         { text: 'Sil', role: 'destructive', handler: () => this.deleteEntry() },

@@ -62,5 +62,13 @@ public class JournalEntryService {
         entry.setTitle(request.title());
         entry.setContent(request.content());
         entry.setMood(request.mood());
+        entry.setLatitude(request.latitude());
+        entry.setLongitude(request.longitude());
+        entry.setLocationName(blankToNull(request.locationName()));
+    }
+
+    /** "   " gibi boş metinleri null olarak kaydeder */
+    private String blankToNull(String value) {
+        return (value == null || value.isBlank()) ? null : value.trim();
     }
 }
