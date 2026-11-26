@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -27,11 +27,14 @@ export class EntryDetailPage {
   private alertCtrl = inject(AlertController);
   private navCtrl = inject(NavController);
 
-  // Adresteki :id değerini okuyup sayıya çeviriyoruz: "/entry/5" → 5
   private id = Number(this.route.snapshot.paramMap.get('id'));
 
   entry = signal<JournalEntry | null>(null);
   errorMessage = signal('');
+
+  // entry değişince otomatik yeniden hesaplanır
+  photos = computed(() => this.entry()?.media.filter((m) => m.type === 'PHOTO') ?? []);
+  audios = computed(() => this.entry()?.media.filter((m) => m.type === 'AUDIO') ?? []);
 
   moodEmoji = moodEmoji;
   moodLabel = moodLabel;
@@ -40,12 +43,19 @@ export class EntryDetailPage {
     addIcons({ createOutline, trashOutline });
   }
 
-  // Düzenlemeden geri dönünce güncel hâli görmek için her girişte yeniden yükle
   ionViewWillEnter(): void {
     this.journalService.getById(this.id).subscribe({
       next: (entry) => this.entry.set(entry),
       error: () => this.errorMessage.set('Günlük bulunamadı.'),
     });
+  }
+
+  mediaUrl(id: number): string {
+    return this.journalService.mediaUrl(id);
+  }
+
+  openPhoto(id: number): void {
+    window.open(this.mediaUrl(id), '_blank');
   }
 
   editEntry(): void {
@@ -55,7 +65,7 @@ export class EntryDetailPage {
   async confirmDelete(): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: 'Günlüğü sil',
-      message: 'Bu günlük kalıcı olarak silinecek. Emin misin?',
+      message: 'Bu günlük, fotoğrafları ve ses kayıtları kalıcı olarak silinecek. Emin misin?',
       buttons: [
         { text: 'Vazgeç', role: 'cancel' },
         { text: 'Sil', role: 'destructive', handler: () => this.deleteEntry() },

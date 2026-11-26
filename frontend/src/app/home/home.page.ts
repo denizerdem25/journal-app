@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel,
   IonItemSliding, IonItemOptions, IonItemOption, IonFab, IonFabButton, IonIcon,
-  IonRefresher, IonRefresherContent, IonNote, NavController,
+  IonRefresher, IonRefresherContent, IonNote, IonThumbnail, NavController,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { add, trash } from 'ionicons/icons';
@@ -19,7 +19,7 @@ import { moodEmoji } from '../models/moods';
     DatePipe,
     IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel,
     IonItemSliding, IonItemOptions, IonItemOption, IonFab, IonFabButton, IonIcon,
-    IonRefresher, IonRefresherContent, IonNote,
+    IonRefresher, IonRefresherContent, IonNote, IonThumbnail,
   ],
 })
 export class HomePage {
@@ -29,14 +29,12 @@ export class HomePage {
   entries = signal<JournalEntry[]>([]);
   errorMessage = signal('');
 
-  // HTML'den çağırabilmek için ortak fonksiyonu sınıfa bağlıyoruz
   moodEmoji = moodEmoji;
 
   constructor() {
     addIcons({ add, trash });
   }
 
-  // Ionic: sayfa her ekrana geldiğinde çalışır (ilk açılış + geri dönüşler)
   ionViewWillEnter(): void {
     this.loadEntries();
   }
@@ -53,6 +51,26 @@ export class HomePage {
         event?.target.complete();
       },
     });
+  }
+
+  /** Günlüğün ilk fotoğrafının id'si; fotoğraf yoksa null */
+  firstPhotoId(entry: JournalEntry): number | null {
+    return entry.media.find((m) => m.type === 'PHOTO')?.id ?? null;
+  }
+
+  /** "📷 2 · 🎤 1" gibi kısa medya özeti; medya yoksa boş metin */
+  mediaSummary(entry: JournalEntry): string {
+    const photoCount = entry.media.filter((m) => m.type === 'PHOTO').length;
+    const audioCount = entry.media.filter((m) => m.type === 'AUDIO').length;
+
+    const parts: string[] = [];
+    if (photoCount > 0) parts.push(`📷 ${photoCount}`);
+    if (audioCount > 0) parts.push(`🎤 ${audioCount}`);
+    return parts.join(' · ');
+  }
+
+  mediaUrl(id: number): string {
+    return this.journalService.mediaUrl(id);
   }
 
   openEntry(id: number): void {

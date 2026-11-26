@@ -12,7 +12,7 @@ ion-textarea {
   color: var(--ion-color-medium);
 }
 
-// Ruh hali kartları: yan yana, sığmazsa yatay kaydırılır
+// Ruh hali kartları
 .mood-picker {
   display: flex;
   gap: 8px;
@@ -44,7 +44,133 @@ ion-textarea {
   }
 }
 
-// Ek butonları: 2 sütunlu ızgara
+// Fotoğraf ızgarası
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.photo {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--ion-color-light);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 26px;
+    line-height: 0;
+    cursor: pointer;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+  }
+
+  .badge {
+    position: absolute;
+    left: 4px;
+    bottom: 4px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--ion-color-primary);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+// Kayıt paneli
+.recorder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--ion-color-light);
+
+  .rec-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ion-color-danger);
+    animation: blink 1s infinite;
+  }
+
+  .rec-time {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums; // rakamlar değişirken genişlik sabit kalsın
+  }
+
+  .rec-label {
+    flex: 1; // butonları sağa iter
+    font-size: 13px;
+    color: var(--ion-color-medium);
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+// Ses listesi
+.audio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.audio-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  audio {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+  }
+
+  .audio-badge {
+    flex-shrink: 0;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--ion-color-primary);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .remove-audio {
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--ion-color-medium);
+    font-size: 24px;
+    line-height: 0;
+    cursor: pointer;
+  }
+}
+
+// Ek butonları
 .attachments {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

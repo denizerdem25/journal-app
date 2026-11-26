@@ -1,4 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+
 import {
   RouteReuseStrategy,
   provideRouter,
@@ -8,6 +9,7 @@ import {
 } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 import { provideHttpClient } from '@angular/common/http';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 
@@ -16,6 +18,9 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
-     provideHttpClient()
+    provideHttpClient(),
   ],
 });
+
+// Tarayıcıda kamera arayüzünü (PWA Elements) kaydet
+defineCustomElements(window);

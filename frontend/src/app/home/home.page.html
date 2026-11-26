@@ -5,7 +5,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Aşağı çekince yenile -->
   <ion-refresher slot="fixed" (ionRefresh)="loadEntries($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
@@ -23,16 +22,25 @@
   <ion-list>
     @for (entry of entries(); track entry.id) {
       <ion-item-sliding>
-        <!-- Tıklanınca detay sayfasını açar -->
         <ion-item [button]="true" [detail]="true" (click)="openEntry(entry.id)">
+          @if (firstPhotoId(entry); as photoId) {
+            <ion-thumbnail slot="start">
+              <img [src]="mediaUrl(photoId)" alt="" />
+            </ion-thumbnail>
+          }
+
           <ion-label>
             <h2>{{ moodEmoji(entry.mood) }} {{ entry.title }}</h2>
             <p>{{ entry.content }}</p>
-            <ion-note>{{ entry.createdAt | date: 'dd.MM.yyyy HH:mm' }}</ion-note>
+            <ion-note>
+              {{ entry.createdAt | date: 'dd.MM.yyyy HH:mm' }}
+              @if (mediaSummary(entry)) {
+                · {{ mediaSummary(entry) }}
+              }
+            </ion-note>
           </ion-label>
         </ion-item>
 
-        <!-- Sola kaydırınca çıkan sil butonu -->
         <ion-item-options side="end">
           <ion-item-option color="danger" (click)="deleteEntry(entry.id)">
             <ion-icon slot="icon-only" name="trash"></ion-icon>
@@ -42,7 +50,6 @@
     }
   </ion-list>
 
-  <!-- Sağ alttaki + butonu: form sayfasını açar -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="newEntry()">
       <ion-icon name="add"></ion-icon>

@@ -23,9 +23,46 @@ h1 {
 }
 
 .content {
-  white-space: pre-line; // kullanıcının bıraktığı satır boşluklarını korur
+  white-space: pre-line;
   font-size: 16px;
   line-height: 1.6;
+}
+
+.section-title {
+  margin: 28px 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ion-color-medium);
+}
+
+// Ses listesi
+.audio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  audio {
+    width: 100%;
+    height: 40px;
+  }
+}
+
+// Fotoğraf ızgarası
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+  }
 }
 
 .center {

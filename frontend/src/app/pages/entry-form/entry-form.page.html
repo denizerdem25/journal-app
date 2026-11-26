@@ -8,7 +8,11 @@
 
     <ion-buttons slot="end">
       <ion-button [strong]="true" [disabled]="!canSave()" (click)="save()">
-        Kaydet
+        @if (saving()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Kaydet
+        }
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -54,14 +58,78 @@
       [(ngModel)]="form.content">
     </ion-textarea>
 
-    <!-- Ekler: sonraki adımlarda çalışır hâle gelecek -->
+    <!-- Fotoğraflar -->
+    @if (existingPhotos().length > 0 || newPhotos().length > 0) {
+      <p class="section-title">Fotoğraflar</p>
+      <div class="photo-grid">
+        @for (m of existingPhotos(); track m.id) {
+          <div class="photo">
+            <img [src]="mediaUrl(m.id)" alt="Fotoğraf" />
+            <button type="button" class="remove" (click)="removeExistingMedia(m)">
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+        }
+
+        @for (p of newPhotos(); track p.previewUrl; let i = $index) {
+          <div class="photo">
+            <img [src]="p.previewUrl" alt="Yeni fotoğraf" />
+            <span class="badge">Yeni</span>
+            <button type="button" class="remove" (click)="removeNewPhoto(i)">
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Kayıt sürerken görünen panel -->
+    @if (isRecording()) {
+      <div class="recorder">
+        <span class="rec-dot"></span>
+        <span class="rec-time">{{ formatDuration(recordingSeconds()) }}</span>
+        <span class="rec-label">Kaydediliyor...</span>
+        <ion-button fill="clear" color="medium" (click)="cancelRecording()">Vazgeç</ion-button>
+        <ion-button color="danger" (click)="stopRecording()">
+          <ion-icon slot="start" name="stop"></ion-icon>
+          Bitir
+        </ion-button>
+      </div>
+    }
+
+    <!-- Ses kayıtları -->
+    @if (existingAudios().length > 0 || newAudios().length > 0) {
+      <p class="section-title">Ses kayıtları</p>
+      <div class="audio-list">
+        @for (m of existingAudios(); track m.id) {
+          <div class="audio-item">
+            <audio controls preload="metadata" [src]="mediaUrl(m.id)"></audio>
+            <button type="button" class="remove-audio" (click)="removeExistingMedia(m)">
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+        }
+
+        @for (a of newAudios(); track a.previewUrl; let i = $index) {
+          <div class="audio-item">
+            <span class="audio-badge">Yeni · {{ formatDuration(a.durationSec) }}</span>
+            <audio controls [src]="a.previewUrl"></audio>
+            <button type="button" class="remove-audio" (click)="removeNewAudio(i)">
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Ekler -->
     <p class="section-title">Ekle</p>
     <div class="attachments">
-      <ion-button fill="outline" [disabled]="true">
+      <ion-button fill="outline" [disabled]="isRecording()" (click)="addPhoto()">
         <ion-icon slot="start" name="camera-outline"></ion-icon>
         Fotoğraf
       </ion-button>
-      <ion-button fill="outline" [disabled]="true">
+      <ion-button fill="outline" [disabled]="isRecording()" (click)="startRecording()">
         <ion-icon slot="start" name="mic-outline"></ion-icon>
         Ses
       </ion-button>
@@ -78,7 +146,7 @@
         Konum
       </ion-button>
     </div>
-    <p class="hint">Fotoğraf, ses, video, şarkı ve konum sonraki adımlarda eklenecek.</p>
+    <p class="hint">Video, şarkı ve konum sonraki adımlarda eklenecek.</p>
   } @else {
     <div class="center">
       <ion-spinner></ion-spinner>
