@@ -24,8 +24,8 @@ public class MediaService {
     private final FileStorageService fileStorage;
 
     @Transactional
-    public MediaFileRes upload(Long entryId, MultipartFile file, MediaFileType type) {
-        JournalEntry entry = entryRepository.findById(entryId)
+    public MediaFileRes upload(Long entryId, Long userId, MultipartFile file, MediaFileType type) {
+        JournalEntry entry = entryRepository.findByIdAndUserId(entryId, userId)
                 .orElseThrow(() -> new EntryNotFoundException(entryId));
 
         validate(file, type);
@@ -44,8 +44,8 @@ public class MediaService {
     }
 
     @Transactional(readOnly = true)
-    public MediaFile getMedia(Long id) {
-        return mediaRepository.findById(id)
+    public MediaFile getMedia(Long id, Long userId) {
+        return mediaRepository.findByIdAndEntryUserId(id, userId)
                 .orElseThrow(() -> new MediaNotFoundException(id));
     }
 
@@ -58,9 +58,8 @@ public class MediaService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        MediaFile media = getMedia(id);
-        // Listeden çıkarınca orphanRemoval sayesinde veritabanından da silinir
+    public void delete(Long id, Long userId) {
+        MediaFile media = getMedia(id, userId);
         media.getEntry().getMedia().remove(media);
         fileStorage.delete(media.getStoredFileName());
     }

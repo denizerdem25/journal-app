@@ -20,27 +20,30 @@ public class JournalEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Günlüğün sahibi
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Column(nullable = false, length = 150)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private String mood; // örn: "happy", "sad", "calm"
+    private String mood;
 
-    // Konum (opsiyonel): ikisi birlikte dolu ya da birlikte boş olur
-    private Double latitude;   // enlem:  -90 ile 90 arası
-    private Double longitude;  // boylam: -180 ile 180 arası
+    private Double latitude;
+    private Double longitude;
 
     @Column(length = 150)
-    private String locationName; // örn: "Bilkent, Ankara"
+    private String locationName;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    // Bir günlük → çok medya (fotoğraf, ses, video)
     @OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")
     private List<MediaFile> media = new ArrayList<>();
