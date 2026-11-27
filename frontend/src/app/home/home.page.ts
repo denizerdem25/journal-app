@@ -2,14 +2,15 @@ import { Component, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel,
-  IonItemSliding, IonItemOptions, IonItemOption, IonFab, IonFabButton, IonIcon,
+  IonItemSliding, IonItemOptions, IonItemOption, IonIcon,
   IonRefresher, IonRefresherContent, IonNote, IonThumbnail, NavController,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { add, trash } from 'ionicons/icons';
+import { trash } from 'ionicons/icons';
 import { JournalService } from '../services/journal.service';
-import { JournalEntry, MediaFileType } from '../models/journal-entry.model';
+import { JournalEntry } from '../models/journal-entry.model';
 import { moodEmoji } from '../models/moods';
+import { firstPhotoId, mediaSummary } from '../utils/entry-utils';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,7 @@ import { moodEmoji } from '../models/moods';
   imports: [
     DatePipe,
     IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel,
-    IonItemSliding, IonItemOptions, IonItemOption, IonFab, IonFabButton, IonIcon,
+    IonItemSliding, IonItemOptions, IonItemOption, IonIcon,
     IonRefresher, IonRefresherContent, IonNote, IonThumbnail,
   ],
 })
@@ -29,10 +30,13 @@ export class HomePage {
   entries = signal<JournalEntry[]>([]);
   errorMessage = signal('');
 
+  // HTML'den kullanmak için
   moodEmoji = moodEmoji;
+  firstPhotoId = firstPhotoId;
+  mediaSummary = mediaSummary;
 
   constructor() {
-    addIcons({ add, trash });
+    addIcons({ trash });
   }
 
   ionViewWillEnter(): void {
@@ -53,34 +57,12 @@ export class HomePage {
     });
   }
 
-  /** Günlüğün ilk fotoğrafının id'si; fotoğraf yoksa null */
-  firstPhotoId(entry: JournalEntry): number | null {
-    return entry.media.find((m) => m.type === 'PHOTO')?.id ?? null;
-  }
-
-  /** "📷 2 · 🎤 1 · 🎬 1" gibi kısa medya özeti; medya yoksa boş metin */
-  mediaSummary(entry: JournalEntry): string {
-    const icons: Record<MediaFileType, string> = { PHOTO: '📷', AUDIO: '🎤', VIDEO: '🎬' };
-
-    return (Object.keys(icons) as MediaFileType[])
-      .map((type) => {
-        const count = entry.media.filter((m) => m.type === type).length;
-        return count > 0 ? `${icons[type]} ${count}` : '';
-      })
-      .filter((part) => part !== '')
-      .join(' · ');
-  }
-
   mediaUrl(id: number): string {
     return this.journalService.mediaUrl(id);
   }
 
   openEntry(id: number): void {
     this.navCtrl.navigateForward(['/entry', id]);
-  }
-
-  newEntry(): void {
-    this.navCtrl.navigateForward('/entry/new');
   }
 
   deleteEntry(id: number): void {

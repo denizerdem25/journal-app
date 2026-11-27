@@ -1,0 +1,92 @@
+.map {
+  width: 100%;
+  height: 100%;
+  z-index: 0; // Leaflet katmanları butonların ve kartın üstüne çıkmasın
+}
+
+.floating-message {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 64px; // sağ üstteki butona yer bırak
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--ion-background-color, #fff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+
+  &.error {
+    background: var(--ion-color-danger);
+    color: white;
+  }
+}
+
+.entry-card {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 16px;
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--ion-background-color, #fff);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+
+  .thumb {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    object-fit: cover;
+
+    &.emoji {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(128, 128, 128, 0.15);
+      font-size: 36px;
+    }
+  }
+
+  .info {
+    flex: 1;
+    min-width: 0; // uzun metinler kartı taşırmasın
+    padding-right: 20px; // ✕ butonuna yer bırak
+
+    h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .meta {
+      margin: 0 0 2px;
+      font-size: 12px;
+      color: var(--ion-color-medium);
+    }
+
+    .preview {
+      margin: 4px 0 0;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; // sığmayan metnin sonuna "…"
+    }
+  }
+
+  .close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--ion-color-medium);
+    font-size: 20px;
+    line-height: 0;
+    cursor: pointer;
+  }
+}

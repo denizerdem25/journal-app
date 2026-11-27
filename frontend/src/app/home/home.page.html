@@ -15,7 +15,7 @@
 
   @if (entries().length === 0 && !errorMessage()) {
     <div class="empty">
-      <p>Henüz günlük yok.<br />+ butonuna basarak ilkini yaz!</p>
+      <p>Henüz günlük yok.<br />Alttaki ⊕ butonuyla ilkini yaz!</p>
     </div>
   }
 
@@ -34,6 +34,9 @@
             <p>{{ entry.content }}</p>
             <ion-note>
               {{ entry.createdAt | date: 'dd.MM.yyyy HH:mm' }}
+              @if (entry.locationName) {
+                · 📍 {{ entry.locationName }}
+              }
               @if (mediaSummary(entry)) {
                 · {{ mediaSummary(entry) }}
               }
@@ -49,10 +52,4 @@
       </ion-item-sliding>
     }
   </ion-list>
-
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="newEntry()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 </ion-content>

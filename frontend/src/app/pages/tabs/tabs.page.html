@@ -1,0 +1,25 @@
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home">
+      <ion-icon name="home-outline"></ion-icon>
+      <ion-label>Günlükler</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="map">
+      <ion-icon name="map-outline"></ion-icon>
+      <ion-label>Harita</ion-label>
+    </ion-tab-button>
+
+    <!-- Sekme değil: yeni günlük formunu açan yuvarlak buton -->
+    <div class="add-slot">
+      <button type="button" class="add-button" aria-label="Yeni günlük" (click)="newEntry()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </div>
+
+    <ion-tab-button tab="profile">
+      <ion-icon name="person-outline"></ion-icon>
+      <ion-label>Profil</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>
